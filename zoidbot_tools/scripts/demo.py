@@ -36,6 +36,9 @@ class Puppeteer(object):
         self._control_arm = baxter_interface.limb.Limb(self._control_limb)
         self._puppet_arm = baxter_interface.limb.Limb(self._puppet_limb)
         self._amp = amplification
+        self.Gripper = baxter_interface.Gripper(limb)
+        self.puppetGripper = baxter_interface.Gripper(puppet_arm[limb])
+
 
         self.stop=True
 #        print("Getting robot state... ")
@@ -91,6 +94,12 @@ class Puppeteer(object):
     def move(self):
         if not self.stop:
             cmd = {}
+	        if self.Gripper.state():
+	        	if not self.puppetGripper.state():
+	        		self.puppetGripper.open()
+	        else:
+				if self.puppetGripper.state():
+	        		self.puppetGripper.close()
             for idx, name in enumerate(self.puppet_joint_names):
                 v = self._control_arm.joint_velocity(
                     self.control_joint_names[idx])
